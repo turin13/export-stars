@@ -9,7 +9,6 @@ from argparse import ArgumentParser
 from github import Github
 from urllib3 import Retry
 
-
 def starred_repos(user):
     starred = user.get_starred()
     total_pages = ceil(starred.totalCount / 30)
@@ -17,7 +16,6 @@ def starred_repos(user):
     for page_num in range(0, total_pages):
         for repo in starred.get_page(page_num):
             yield repo
-
 
 def config_retry(backoff_factor=1.0, total=8):
     """urllib3 will sleep for:
@@ -27,13 +25,11 @@ def config_retry(backoff_factor=1.0, total=8):
     Retry.DEFAULT_BACKOFF_MAX = backoff_factor * 2 ** (total - 1)
     return Retry(total=total, backoff_factor=backoff_factor)
 
-
 def parse_args():
     parser = ArgumentParser(description="export a GitHub user's starred repositorys to CSV")
     parser.add_argument("--user", dest='user')
     parser.add_argument("--github-token", dest='token')
     return parser.parse_args()
-
 
 def main():
     args = parse_args()
@@ -47,8 +43,7 @@ def main():
     writer = csv.writer(sys.stdout)
 
     for repo in starred_repos(user):
-        writer.writerow((repo.html_url, repo.description))
-
+        writer.writerow((repo.name, repo.topics, repo.license, repo.html_url, repo.description, repo.forks_count, repo.stargazers_count, repo.watchers_count, repo.open_issues_count, repo.homepage))
 
 if __name__ == "__main__":
     main()
